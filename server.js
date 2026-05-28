@@ -7,6 +7,8 @@ app.use(express.json());
 
 app.post('/chat', async (req, res) => {
   try {
+    console.log('Received request, calling Anthropic...');
+    
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -18,11 +20,14 @@ app.post('/chat', async (req, res) => {
     });
 
     const data = await response.json();
+    console.log('Anthropic response status:', response.status);
+    console.log('Anthropic response:', JSON.stringify(data).substring(0, 200));
+    
     res.json(data);
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Proxy error' });
+    console.error('Proxy error:', err.message);
+    res.status(500).json({ error: 'Proxy error', details: err.message });
   }
 });
 
